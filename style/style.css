@@ -75,6 +75,9 @@ html {
   align-items: center;
   color: gray;
 }
+.day:nth-child(7n-6):not(.prev-date) {
+  color: red;
+}
 
 .calendar-days-grid {
   width: 100%;
@@ -110,14 +113,9 @@ html {
 .prev-date:hover,
 .next-date:hover {
   opacity: 0.5;
-  color: gray;
 }
 
 .today {
   border: 1px solid green;
   border-radius: 50%;
-}
-
-.day:nth-child(7n-6) {
-  color: red;
 }
