@@ -8,6 +8,12 @@ export class View {
     };
   }
 
+  renderAll(target, position, template) {
+    [...target].map((container) => {
+      container.insertAdjacentHTML(position, template);
+    });
+  }
+
   render(target, position, template) {
     target.insertAdjacentHTML(position, template);
   }
@@ -30,7 +36,7 @@ export class View {
         date.getMonth() === new Date().getMonth() &&
         date.getFullYear() === new Date().getFullYear()
       ) {
-        this.days += `<div class="today day">${i}</div>`;
+        this.days += `<div class="day today">${i}</div>`;
       } else {
         this.days += `<div class="day">${i}</div>`;
       }
@@ -43,9 +49,29 @@ export class View {
     this.days = '';
 
     for (let j = 1; j <= nextDays; j++) {
-      this.days += `<div class="next-date day">${j}</div>`;
+      this.days += `<div class="day next-date">${j}</div>`;
     }
 
     return this.days;
+  }
+
+  updateInputValue(target, value) {
+    const datePickerInput =
+      target.closest('.calendar').previousElementSibling.children[1];
+
+    datePickerInput.value = value;
+  }
+
+  updateNavDetails(navContainer, monthValue, yearValue) {
+    const month = navContainer.children[0];
+    const year = navContainer.children[1];
+
+    month.innerHTML = monthValue;
+
+    year.innerHTML = yearValue;
+  }
+
+  updateDaysContainer(target, prev, current, next) {
+    target.innerHTML = prev + current + next;
   }
 }

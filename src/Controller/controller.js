@@ -1,9 +1,11 @@
 import { POSITION, STAGE, NUMBER } from '../common/constants.js';
-import { $ } from '../common/DOM.js';
+import { $, $$ } from '../common/DOM.js';
 import {
+  calendarTemplate,
   calendarNavTemplate,
   calendarDatesTemplate,
   calendarDaysTemplate,
+  datePickerInputTemplate,
 } from '../common/template.js';
 
 export class Controller {
@@ -15,18 +17,62 @@ export class Controller {
 
     this.$ = {
       app: $('.app'),
-      calenderContainer: $('.calendar'),
+      container: $('.calendar'),
+      datePickerInput: $('.date-picker'),
+    };
+
+    this.$$ = {
+      containers: $$('.container'),
     };
 
     this.bindEventListeners();
   }
 
-  bindDays() {
-    const daysContainer = $('.calendar-days');
+  initApp() {
+    this.initBaseDisplay();
+    this.initCalendar();
+  }
+
+  initBaseDisplay() {
+    this.view.renderAll(
+      this.$$.containers,
+      'afterbegin',
+      datePickerInputTemplate()
+    );
+
+    this.view.renderAll(
+      this.$$.containers,
+      'beforeend',
+      calendarTemplate(
+        this.model.updateCurrentMonth(this.date.getMonth()),
+        this.date.getFullYear()
+      )
+    );
+  }
+
+  initCalendar() {
+    this.date.setDate(NUMBER.ONE);
+
+    const $calendar = $$('.calendar');
+
+    this.view.renderAll(
+      $calendar,
+      POSITION.BEFOREEND,
+      calendarDatesTemplate(this.model.state.days)
+    );
+
+    this.view.renderAll($calendar, POSITION.BEFOREEND, calendarDaysTemplate());
+
+    this.bindDefaultDays();
+  }
+
+  bindDefaultDays() {
+    let daysContainer = $$('.calendar-days');
+
     const nextDays =
       NUMBER.WEEKDAYS - this.model.getLastDayIndex(this.date) - NUMBER.ONE;
 
-    this.view.render(
+    this.view.renderAll(
       daysContainer,
       POSITION.AFTERBEGIN,
       this.view.renderPrevDays(
@@ -35,48 +81,48 @@ export class Controller {
       )
     );
 
-    this.view.render(
+    this.view.renderAll(
       daysContainer,
       POSITION.BEFOREEND,
       this.view.renderDays(this.date, this.model.getLastDayOfMonth(this.date))
     );
 
-    this.view.render(
+    this.view.renderAll(
       daysContainer,
       POSITION.BEFOREEND,
       this.view.renderNextDays(nextDays)
     );
   }
 
-  initCalender() {
-    this.date.setDate(NUMBER.ONE);
+  onClickArrowIcon(target) {
+    const navContainer = target.parentElement.children[1];
+    const year = this.date.getFullYear();
+    const month = this.model.updateCurrentMonth(this.date.getMonth());
 
-    this.view.render(
-      this.$.calenderContainer,
-      POSITION.AFTERBEGIN,
-      calendarNavTemplate(
-        this.model.updateCurrentMonth(this.date.getMonth()),
-        this.date.getFullYear()
-      )
+    let daysContainer = target.parentElement.parentElement.children[2];
+    const nextDays =
+      NUMBER.WEEKDAYS - this.model.getLastDayIndex(this.date) - NUMBER.ONE;
+    const prev = this.view.renderPrevDays(
+      this.date.getDay(),
+      this.model.getPrevLastday(this.date)
     );
-
-    this.view.render(
-      this.$.calenderContainer,
-      POSITION.BEFOREEND,
-      calendarDatesTemplate(this.model.state.days)
+    const current = this.view.renderDays(
+      this.date,
+      this.model.getLastDayOfMonth(this.date)
     );
+    this.view.renderNextDays(nextDays);
+    const next = this.view.renderNextDays(nextDays);
 
-    this.view.render(
-      this.$.calenderContainer,
-      POSITION.BEFOREEND,
-      calendarDaysTemplate()
-    );
+    this.view.updateNavDetails(navContainer, month, year);
 
-    this.bindDays();
+    this.view.updateDaysContainer(daysContainer, prev, current, next);
   }
 
   switch(target) {
-    this.$.calenderContainer.innerHTML = '';
+    if (!target.classList.contains('fas')) {
+      return;
+    }
+
     if (target.classList.contains(STAGE.PREV)) {
       this.date.setMonth(this.date.getMonth() - NUMBER.ONE);
     }
@@ -84,21 +130,13 @@ export class Controller {
       this.date.setMonth(this.date.getMonth() + NUMBER.ONE);
     }
 
-    this.initCalender();
+    this.onClickArrowIcon(target);
   }
 
-  logdate(year, month, day) {
-    if (month > NUMBER.DEC) {
-      month = NUMBER.JAN;
-    } else if (month === NUMBER.ZERO) {
-      month = NUMBER.DEC;
-    }
+  updateDatePickerValue(target, date) {
+    const datePickerInput = $('#date-select');
 
-    if (day.length > NUMBER.ONE) {
-      console.log(`${year}-${month}-${day}`);
-    } else {
-      console.log(`${year}-${month}-0${day}`);
-    }
+    datePickerInput.value = this.model.logDates(target, date);
   }
 
   bindEventListeners() {
@@ -106,19 +144,27 @@ export class Controller {
       this.switch(target);
 
       if (target.classList.contains('day')) {
-        const year = this.date.getFullYear();
-        const day = target.textContent;
-        let month = this.date.getMonth() + NUMBER.ONE;
+        this.view.updateInputValue(
+          target,
+          this.model.logDates(target, this.date)
+        );
 
-        if (target.classList.contains('prev-date')) {
-          month = month - NUMBER.ONE;
-        } else if (target.classList.contains('next-date')) {
-          month = month + NUMBER.ONE;
-        } else {
-          month = month;
-        }
+        target.closest('.calendar').classList.add('hidden');
 
-        this.logdate(year, month, day);
+        this.model.paintClickedNumber(target);
+      }
+
+      if (target.id === 'date-select') {
+        target.closest('.container').children[1].classList.toggle('hidden');
+      }
+
+      if (
+        target.classList.contains('container') ||
+        target.classList.contains('app')
+      ) {
+        [...$$('.calendar')].map((container) => {
+          container.classList.add('hidden');
+        });
       }
     });
   }

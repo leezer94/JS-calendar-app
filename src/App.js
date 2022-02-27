@@ -8,7 +8,7 @@ class App {
     const model = new Model();
     const controller = new Controller(view, model);
 
-    controller.initCalender();
+    controller.initApp();
   }
 }
 
