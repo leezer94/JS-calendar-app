@@ -2,11 +2,7 @@
 
 HTML에서 기본 제공하는 네이티브 Date picker(`<input type="date" />`)와 유사하게 동작하는 커스텀 Date picker를 구현해보자. 네이티브 Date picker는 다음과 같이 동작한다.
 
-![native-date-picker.gif](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/afff8768-1c11-4beb-b51d-cda10d60b2a6/native-date-picker.gif)
-
 최종적으로 구현하려는 커스텀 Date picker도 다음과 같이 네이티브 Date picker와 유사하게 동작한다.
-
-![date-picker.gif](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/f454fc63-2021-4dd6-b933-201040d4a9ef/date-picker.gif)
 
 다음의 순서에 따라 먼저 Calendar를 구현하고 이를 기반으로 DatePicker를 구현해보자.\*\*\*\*
 
@@ -14,15 +10,11 @@ HTML에서 기본 제공하는 네이티브 Date picker(`<input type="date" />`)
 
 다음 그림을 참고해서 Calendar의 뷰를 구현한다.
 
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/9b9afd42-34fd-4ab3-9641-e87a4fcb9358/Untitled.png)
-
 요구 사항은 다음과 같다.
 
 1. 레이아웃
 
 flexbox는 1차원(선형) 레이아웃의 정렬에 적합하고 grid는 2차원(매트릭스) 레이이웃에 적합하다. .calendar-nav 요소의 콘텐츠는 선형이고 .calendar-grid 요소의 콘텐츠는 매트릭스이므로 다음과 같이 레이아웃 시스템을 적용해 구현한다.
-
-[Untitled](https://www.notion.so/196761618cd84892b6e9588ecc46782c)
 
 [When to use Flexbox and when to use CSS grid - LogRocket Blog](https://blog.logrocket.com/flexbox-vs-css-grid/)
 
@@ -35,8 +27,6 @@ CSS의 미디어 쿼리(@media)는 HTML 요소를 기반으로 동작하지 않�
 자바스크립트로 .calendar 요소의 width 값을 동적으로 변경할 경우를 대비해 [css 변수](https://developer.mozilla.org/ko/docs/Web/CSS/Using_CSS_custom_properties)
 를 사용하여 .calendar 요소의 width 값을 관리하려 한다. 다음과 같이 .calendar 요소의 width 값이 변경되면 캘린더 전체의 크기와 폰트 사이즈가 연동해서 조정되도록 뷰를 구현한다.
 
-![calendar-size.gif](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/414494b9-507c-4494-8c72-2694e366a68e/calendar-size.gif)
-
 1. 기능
 
 구현된 뷰를 기반으로 다음 그림을 참고해서 바닐라 자바스크립트로 기능을 구현한다. 구현시 다음 사항에 주의하기 바란다.
@@ -48,8 +38,6 @@ CSS의 미디어 쿼리(@media)는 HTML 요소를 기반으로 동작하지 않�
 - 재사용을 고려해 의존성을 가지지 않고 다른 요소에 간섭하지 않도록 **컴포넌트로 구현**한다.
 - 한 화면에 **여러 개의 컴포넌트**가 렌더링되어도 이상없이 동작해야 한다.
 - ES Module(또는 Webpack)을 사용해 **모듈화**한다.
-
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/ab257512-bd87-4711-b990-e3394992ebf0/Untitled.png)
 
 요구 사항은 다음과 같다.
 
@@ -72,8 +60,6 @@ CSS의 미디어 쿼리(@media)는 HTML 요소를 기반으로 동작하지 않�
 - 재사용을 고려해 의존성을 가지지 않고 다른 요소에 간섭하지 않도록 **컴포넌트로 구현**한다.
 - 한 화면에 **여러 개의 컴포넌트**가 렌더링되어도 이상없이 동작해야 한다.
 - ES Module(또는 Webpack)을 사용해 **모듈화**한다.
-
-![date-picker.gif](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/f454fc63-2021-4dd6-b933-201040d4a9ef/date-picker.gif)
 
 요구 사항은 다음과 같다.
 
